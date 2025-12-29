@@ -1,0 +1,22 @@
+.game-info-text {
+    /* Override GNOME Shell's default "dimmed" style for non-reactive items.
+       This ensures the text remains readable and retains the theme's color
+       even when the menu item is set to 'reactive: false'. */
+    color: inherit !important;
+    opacity: 1 !important;
+    font-weight: 500;
+}
+
+.header-title {
+    font-size: 1.2em;
+    font-weight: bold;
+    padding-bottom: 5px;
+}
+
+/* ProtonDB Tier Colors */
+.proton-tier-platinum { color: #B4C7D9; }
+.proton-tier-gold     { color: #CFB53B; }
+.proton-tier-silver   { color: #A6A6A6; }
+.proton-tier-bronze   { color: #CD7F32; }
+.proton-tier-borked   { color: #FF0000; }
+.proton-tier-native   { color: #00FF00; }
