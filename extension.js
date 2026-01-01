@@ -36,23 +36,30 @@ const ProtonCheckerIndicator = GObject.registerClass(
 
             // Initialize HTTP session (Soup 3)
             this._session = new Soup.Session();
-            
-            // Set User-Agent to prevent ProtonDB from blocking requests
+            // User-Agent required to prevent ProtonDB from blocking requests
             this._session.user_agent = 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36';
             
             this._decoder = new TextDecoder('utf-8');
 
-            // Panel icon
             this.add_child(new St.Icon({
                 icon_name: 'applications-games-symbolic',
                 style_class: 'system-status-icon',
             }));
             
             this._buildMenu();
+
+            // Ensure proper cleanup. We connect to the destroy signal to handle
+            // the session disposal within the class scope, preventing issues 
+            // in the extension's disable() method.
+            this.connect('destroy', () => {
+                if (this._session) {
+                    this._session.abort();
+                    this._session = null;
+                }
+            });
         }
 
         _buildMenu() {
-            // Search field
             const searchEntry = new St.Entry({
                 style_class: 'search-entry',
                 hint_text: _('Search game...'),
@@ -68,48 +75,137 @@ const ProtonCheckerIndicator = GObject.registerClass(
             searchBox.add_child(searchEntry);
             this.menu.addMenuItem(searchBox);
 
-            // Results section
             this._resultsSection = new PopupMenu.PopupMenuSection();
             this.menu.addMenuItem(this._resultsSection);
 
-            // Connect search event
             searchEntry.clutter_text.connect('activate', () => {
                 this._onSearch(searchEntry.get_text());
             });
         }
 
-        async _onSearch(text) {
+        // ============================================================
+        // UI Management Helpers (Memory Safety)
+        // ============================================================
+
+        /**
+         * Soft Clear: Visually hides items without destroying them from memory.
+         * * This workaround prevents "Object St_Bin has been already disposed" errors
+         * caused by race conditions when the menu is closing while items are being modified.
+         */
+        _softClear() {
+            if (!this._resultsSection) return;
+
+            const items = this._resultsSection._getMenuItems();
+            items.forEach(item => {
+                if (item.actor) item.actor.visible = false;
+            });
+        }
+
+        /**
+         * Hard Clear: Actually removes items from the container.
+         * * Only call this when sure the menu is stable (e.g., start of new search)
+         * or after confirming the actor is still mapped.
+         */
+        _hardClear() {
+            if (!this._resultsSection) return;
             this._resultsSection.removeAll();
+        }        
+
+        // ============================================================
+        // Main Logic
+        // ============================================================
+
+        async _onSearch(text) {
+            if (!this._resultsSection) return;
+            
+            // Safe to hard clear here as this is triggered by user input (menu is open/stable)
+            this._hardClear();
             
             if (!text || text.trim() === '') return;
 
-            // Loading visual feedback
             const loadingItem = new PopupMenu.PopupMenuItem(_('Searching Steam...'), { reactive: false });
             this._resultsSection.addMenuItem(loadingItem);
 
             try {
                 const games = await this._fetchSteamGames(text);
+
+                // Safety check: If the menu was closed during the async fetch,
+                // stop execution to avoid accessing disposed objects.
+                if (!this._resultsSection || !this._resultsSection.actor.mapped) {
+                    return; 
+                }
                 
-                this._resultsSection.removeAll();
+                this._hardClear();
 
                 if (games.length === 0) {
                     this._showStatusMessage(_('No games found.'));
                     return;
                 }
 
-                // Populate game list
                 games.forEach(game => {
-                    const item = new PopupMenu.PopupMenuItem(game.name);
-                    item.connect('activate', () => this._onGameSelected(game));
+                    const item = new PopupMenu.PopupBaseMenuItem();
+                    
+                    const label = new St.Label({ 
+                        text: game.name,
+                        y_align: Clutter.ActorAlign.CENTER 
+                    });
+                    item.add_child(label);
+                    
+                    // Override 'activate' to prevent the menu from closing automatically on click.
+                    // We handle the navigation logic manually.
+                    item.activate = (event) => {
+                        if (this._resultsSection) {
+                            this._onGameSelected(game);
+                        }
+                    };
+                    
                     this._resultsSection.addMenuItem(item);
                 });
 
             } catch (error) {
                 console.error(error);
-                this._resultsSection.removeAll();
-                this._showStatusMessage(_('Error fetching data.'));
+                if (this._resultsSection && this._resultsSection.actor.mapped) {
+                    this._hardClear();
+                    this._showStatusMessage(_('Error fetching data.'));
+                }
             }
         }
+
+        async _onGameSelected(game) {
+            if (!this._resultsSection) return;
+            
+            // 1. Soft Clear: Hide items immediately to prevent crash if user clicks outside
+            this._softClear();
+
+            // 2. Add visual feedback (only visible item)
+            const fetchingItem = new PopupMenu.PopupMenuItem(_(`Fetching ProtonDB: ${game.name}...`), { 
+                reactive: false 
+            });
+            this._resultsSection.addMenuItem(fetchingItem);
+
+            try {
+                const protonData = await this._fetchProtonData(game.id);
+                
+                // Safety check: Ensure menu is still drawn on screen
+                if (!this._resultsSection || !this._resultsSection.actor.mapped) return;
+
+                // 3. Hard Clear: Now that data is ready and menu is stable, clean up memory
+                this._hardClear();
+                
+                this._displayGameDetails(game, protonData);
+                
+            } catch (error) {
+                console.error(error);
+                if (this._resultsSection && this._resultsSection.actor.mapped) {
+                    this._hardClear();
+                    this._showStatusMessage(_('ProtonDB data not found.'));
+                }
+            }
+        }
+
+        // ============================================================
+        // API & Rendering
+        // ============================================================
 
         async _fetchSteamGames(searchText) {
             const steamEndpoint = "https://store.steampowered.com/api/storesearch/";
@@ -127,23 +223,6 @@ const ProtonCheckerIndicator = GObject.registerClass(
             return data.items || [];
         }
 
-        async _onGameSelected(game) {
-            this._resultsSection.removeAll();
-            
-            // Fetching visual feedback
-            this._resultsSection.addMenuItem(new PopupMenu.PopupMenuItem(_(`Fetching ProtonDB: ${game.name}...`), { reactive: false }));
-
-            try {
-                const protonData = await this._fetchProtonData(game.id);
-                this._resultsSection.removeAll();
-                this._displayGameDetails(game, protonData);
-            } catch (error) {
-                console.error(`Fetch Error for ID ${game.id}: ${error}`);
-                this._resultsSection.removeAll();
-                this._showStatusMessage(_('ProtonDB data not found.'));
-            }
-        }
-
         async _fetchProtonData(gameId) {
             const protonEndpoint = `https://www.protondb.com/api/v1/reports/summaries/${gameId}.json`;
             
@@ -158,43 +237,47 @@ const ProtonCheckerIndicator = GObject.registerClass(
         }
 
         _displayGameDetails(game, data) {
-            // Title
-            const titleItem = new PopupMenu.PopupMenuItem(game.name, { reactive: false, style_class: 'game-info-text' });
-            titleItem.label.add_style_class_name('header-title'); 
+            if (!this._resultsSection) return;
+
+            const titleItem = new PopupMenu.PopupMenuItem(game.name, { 
+                reactive: false, 
+                style_class: 'game-info-text' 
+            });
+            
+            // Check label existence for safety across different shell versions
+            if (titleItem.label) titleItem.label.add_style_class_name('header-title'); 
+            
             this._resultsSection.addMenuItem(titleItem);
             this._resultsSection.addMenuItem(new PopupMenu.PopupSeparatorMenuItem());
 
-            // Tier with specific styling
             const tierClass = data.tier ? `proton-tier-${data.tier.toLowerCase()}` : '';
             this._resultsSection.addMenuItem(
                 this._createStyledItem('Tier: ', data.tier ? data.tier.toUpperCase() : 'UNKNOWN', tierClass)
             );
 
-            // Trending status
             const trendingClass = data.trendingTier ? `proton-tier-${data.trendingTier.toLowerCase()}` : '';
             this._resultsSection.addMenuItem(
                 this._createStyledItem('Trending: ', data.trendingTier ? data.trendingTier.toUpperCase() : '-', trendingClass)
             );
 
-            // Other details
             this._resultsSection.addMenuItem(this._createStyledItem('Score: ', data.score || '-', null));
             this._resultsSection.addMenuItem(this._createStyledItem('Confidence: ', data.confidence || '-', null));
             this._resultsSection.addMenuItem(this._createStyledItem('Votes: ', data.total || '-', null));
         }
 
-        // Helper to create a "Label: Value" row where value is right-aligned
         _createStyledItem(labelText, valueText, valueStyleClass) {
-            let item = new PopupMenu.PopupBaseMenuItem({ reactive: false, style_class:'game-info-text' });
+            let item = new PopupMenu.PopupBaseMenuItem({ 
+                reactive: false, 
+                style_class:'game-info-text' 
+            });
             
             let box = new St.BoxLayout({ x_expand: true });
 
-            // Label (e.g., "Score: ")
             let label = new St.Label({ 
                 text: labelText,
                 y_align: Clutter.ActorAlign.CENTER,
             });
 
-            // Value (e.g., "90")
             let valueLabel = new St.Label({ 
                 text: String(valueText),
                 y_align: Clutter.ActorAlign.CENTER,
@@ -202,7 +285,6 @@ const ProtonCheckerIndicator = GObject.registerClass(
                 x_align: Clutter.ActorAlign.END,
             });
 
-            // Apply specific color class if provided (e.g., for Tier/Trending)
             if (valueStyleClass) {
                 valueLabel.add_style_class_name(valueStyleClass);
             }
@@ -215,6 +297,7 @@ const ProtonCheckerIndicator = GObject.registerClass(
         }
 
         _showStatusMessage(message) {
+            if (!this._resultsSection) return;
             const item = new PopupMenu.PopupMenuItem(message, { reactive: false });
             this._resultsSection.addMenuItem(item);
         }
