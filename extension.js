@@ -163,7 +163,7 @@ const ProtonCheckerIndicator = GObject.registerClass(
                 });
 
             } catch (error) {
-                console.error(error);
+                console.error(`[ProtonDB Checker] Error: ${error}`);
                 if (this._resultsSection && this._resultsSection.actor.mapped) {
                     this._hardClear();
                     this._showStatusMessage(_('Error fetching data.'));
@@ -195,7 +195,7 @@ const ProtonCheckerIndicator = GObject.registerClass(
                 this._displayGameDetails(game, protonData);
                 
             } catch (error) {
-                console.error(error);
+                console.error(`[ProtonDB Checker] Error: ${error}`);
                 if (this._resultsSection && this._resultsSection.actor.mapped) {
                     this._hardClear();
                     this._showStatusMessage(_('ProtonDB data not found.'));
