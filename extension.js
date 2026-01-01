@@ -178,7 +178,7 @@ const ProtonCheckerIndicator = GObject.registerClass(
             this._softClear();
 
             // 2. Add visual feedback (only visible item)
-            const fetchingItem = new PopupMenu.PopupMenuItem(_(`Fetching ProtonDB: ${game.name}...`), { 
+            const fetchingItem = new PopupMenu.PopupMenuItem(_('Fetching ProtonDB: %s...').format(game.name), { 
                 reactive: false 
             });
             this._resultsSection.addMenuItem(fetchingItem);

@@ -1,42 +1,47 @@
-# Portuguese translations for ProtonDB Checker extension.
-# Copyright (C) 2025 Arthur Carvalho
-# This file is distributed under the same license as the extension.
-# Arthur <arthurcarvlima@outlook.com>, 2025.
+# Portuguese translations for PACKAGE package.
+# Copyright (C) 2026 THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# Arthur <arthurcarvlima@outlook.com>, 2026.
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: ProtonDB Checker 1.0\n"
+"Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-12-28 19:06-0300\n"
-"PO-Revision-Date: 2025-12-28 19:30-0300\n"
+"POT-Creation-Date: 2026-01-01 19:35-0300\n"
+"PO-Revision-Date: 2026-01-01 19:37-0300\n"
 "Last-Translator: Arthur <arthurcarvlima@outlook.com>\n"
-"Language-Team: Brazilian Portuguese\n"
+"Language-Team: Brazilian Portuguese <ldpbr-translation@lists.sourceforge.net>\n"
 "Language: pt_BR\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
 
-#: extension.js:16
+#: extension.js:35
 msgid "ProtonDB Checker Indicator"
 msgstr "Indicador ProtonDB Checker"
 
-#: extension.js:39
+#: extension.js:65
 msgid "Search game..."
 msgstr "Pesquisar jogo..."
 
-#: extension.js:68
+#: extension.js:126
 msgid "Searching Steam..."
 msgstr "Buscando na Steam..."
 
-#: extension.js:77
+#: extension.js:141
 msgid "No games found."
 msgstr "Nenhum jogo encontrado."
 
-#: extension.js:91
+#: extension.js:169
 msgid "Error fetching data."
 msgstr "Erro ao buscar dados."
 
-#: extension.js:124
+#: extension.js:181
+#, javascript-format
+msgid "Fetching ProtonDB: %s..."
+msgstr "Buscando no ProtonDB: %s..."
+
+#: extension.js:201
 msgid "ProtonDB data not found."
 msgstr "Dados do ProtonDB não encontrados."
