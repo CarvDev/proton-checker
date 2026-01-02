@@ -1,4 +1,19 @@
+# Ignorar binários de tradução
+# Translation binaries
+locale/*/LC_MESSAGES/*.mo
+*.pot
+!po/*.pot # Manter o template principal se desejar, mas geralmente ignoramos gerados
+
+# Schemas binaries
+schemas/gschemas.compiled
+
+# Zips and packages
+*.zip
+*.tar.gz
+
+# System and IDEs files
+.vscode/
+.idea/
+.DS_Store
 *~
 *.swp
-.DS_Store
-schemas/gschemas.compiled
