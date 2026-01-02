@@ -1,8 +1,15 @@
 {
   "name": "ProtonDB Checker",
-  "description": "Check Steam games compatibility details directly from Gnome-Shell",
+  "description": "Check Steam games compatibility details directly from GNOME Shell.",
   "uuid": "proton-checker@carvdev.github.com",
-  "shell-version": ["45", "46", "47", "48", "49"],
+  "shell-version": [
+    "45",
+    "46",
+    "47",
+    "48",
+    "49"
+  ],
   "gettext-domain": "proton-checker@carvdev.github.com",
-  "url": "https://github.com/CarvDev/proton-checker"
+  "url": "https://github.com/CarvDev/proton-checker",
+  "version": 1
 }
