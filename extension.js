@@ -23,6 +23,7 @@ import St from 'gi://St';
 import Soup from 'gi://Soup';
 import GLib from 'gi://GLib';
 import Clutter from 'gi://Clutter';
+import Gio from 'gi://Gio';
 
 import {Extension, gettext as _} from 'resource:///org/gnome/shell/extensions/extension.js';
 import * as PanelMenu from 'resource:///org/gnome/shell/ui/panelMenu.js';
@@ -239,13 +240,38 @@ const ProtonCheckerIndicator = GObject.registerClass(
         _displayGameDetails(game, data) {
             if (!this._resultsSection) return;
 
-            const titleItem = new PopupMenu.PopupMenuItem(game.name, { 
+            const titleItem = new PopupMenu.PopupBaseMenuItem({ 
                 reactive: false, 
                 style_class: 'game-info-text' 
             });
             
-            // Check label existence for safety across different shell versions
-            if (titleItem.label) titleItem.label.add_style_class_name('header-title'); 
+            const titleBox = new St.BoxLayout({ x_expand: true });
+            
+            const titleLabel = new St.Label({
+                text: game.name,
+                y_align: Clutter.ActorAlign.CENTER,
+                x_expand: true,
+                style_class: 'header-title'
+            });
+            titleBox.add_child(titleLabel);
+            
+            // Link icon to open ProtonDB page
+            const linkButton = new St.Button({
+                style_class: 'protondb-link-button',
+                child: new St.Icon({
+                    icon_name: 'web-browser-symbolic',
+                    icon_size: 16,
+                }),
+                y_align: Clutter.ActorAlign.CENTER,
+            });
+            
+            linkButton.connect('clicked', () => {
+                const protonUrl = `https://www.protondb.com/app/${game.id}`;
+                Gio.AppInfo.launch_default_for_uri(protonUrl, null);
+            });
+            
+            titleBox.add_child(linkButton);
+            titleItem.add_child(titleBox);
             
             this._resultsSection.addMenuItem(titleItem);
             this._resultsSection.addMenuItem(new PopupMenu.PopupSeparatorMenuItem());

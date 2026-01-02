@@ -1,0 +1,48 @@
+# Spanish translations for proton-checker package.
+# Copyright (C) 2026 THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# Juanma, 2026.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-01-01 19:35-0300\n"
+"PO-Revision-Date: 2026-01-02 12:00+0100\n"
+"Last-Translator: Juanma\n"
+"Language-Team: Spanish <es@li.org>\n"
+"Language: es_ES\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#: extension.js:35
+msgid "ProtonDB Checker Indicator"
+msgstr "Indicador de ProtonDB Checker"
+
+#: extension.js:65
+msgid "Search game..."
+msgstr "Buscar juego..."
+
+#: extension.js:126
+msgid "Searching Steam..."
+msgstr "Buscando en Steam..."
+
+#: extension.js:141
+msgid "No games found."
+msgstr "No se encontraron juegos."
+
+#: extension.js:169
+msgid "Error fetching data."
+msgstr "Error al obtener datos."
+
+#: extension.js:181
+#, javascript-format
+msgid "Fetching ProtonDB: %s..."
+msgstr "Obteniendo datos de ProtonDB: %s..."
+
+#: extension.js:201
+msgid "ProtonDB data not found."
+msgstr "Datos de ProtonDB no encontrados."
+
