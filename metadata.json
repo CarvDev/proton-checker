@@ -1,6 +1,6 @@
 {
   "name": "ProtonDB Checker",
-  "description": "Check Steam games compatibility details directly from GNOME Shell.",
+  "description": "Check Steam game compatibility details directly from the GNOME Panel.\n\nHow to use: Click the gamepad icon in the panel, search for a game, and select it from the list.\n\nRequirement: An active internet connection is needed to fetch data.\n\nDisclaimer: This extension uses data and services from Steam and ProtonDB but is not affiliated with Valve or ProtonDB.\n\nNote: This extension is in early development. Feedback is welcome!",
   "uuid": "proton-checker@carvdev.github.com",
   "shell-version": [
     "45",
@@ -11,5 +11,9 @@
   ],
   "gettext-domain": "proton-checker@carvdev.github.com",
   "url": "https://github.com/CarvDev/proton-checker",
-  "version": 2
+  "donations": {
+    "ko-fi": "carvdev"
+  },
+  "version": 2,
+  "version-name": "1.1"
 }
