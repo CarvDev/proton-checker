@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-01-01 19:35-0300\n"
+"POT-Creation-Date: 2026-01-05 13:15-0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,31 +17,31 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: extension.js:35
+#: extension.js:36
 msgid "ProtonDB Checker Indicator"
 msgstr ""
 
-#: extension.js:65
+#: extension.js:70
 msgid "Search game..."
 msgstr ""
 
-#: extension.js:126
+#: extension.js:131
 msgid "Searching Steam..."
 msgstr ""
 
-#: extension.js:141
+#: extension.js:146
 msgid "No games found."
 msgstr ""
 
-#: extension.js:169
+#: extension.js:174
 msgid "Error fetching data."
 msgstr ""
 
-#: extension.js:181
+#: extension.js:186
 #, javascript-format
 msgid "Fetching ProtonDB: %s..."
 msgstr ""
 
-#: extension.js:201
+#: extension.js:206
 msgid "ProtonDB data not found."
 msgstr ""
