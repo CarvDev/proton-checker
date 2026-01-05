@@ -9,7 +9,7 @@ echo "Starting extension packaging..."
 echo "  Updating translation files..."
 ./scripts/manage-translations.sh > /dev/null 2>&1
 
-# 2. COMPILE translations
+# 2. Compile translations
 echo "  Compiling translations to .mo..."
 
 for po_file in po/*.po; do
@@ -29,7 +29,22 @@ for po_file in po/*.po; do
     fi
 done
 
-# 3. Create the ZIP file (excluding development files)
+# 3. Generate fallbacks (if there's no universal translation for a language, use a regional one)
+for locale_folder in locale/*; do
+    if [ -d "$locale_folder" ]; then
+        
+        # Create the target directory, removing the characters from "_" to the end of the string 
+        target_folder="${locale_folder%_*}"
+
+        # Verify if the destination is diferent from the origin AND if it doesn't exist
+        if [ "$target_folder" != "$locale_folder" ] && [ ! -d "$target_folder" ]; then
+            echo "  Generating fallback: $target_folder (copy of $locale_folder)"
+            cp -r "$locale_folder" "$target_folder"
+        fi
+    fi
+done
+
+# 4. Create the ZIP file (excluding development files)
 ZIP_NAME="proton-checker.zip"
 rm -f $ZIP_NAME
 
