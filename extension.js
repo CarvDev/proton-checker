@@ -330,7 +330,7 @@ const ProtonCheckerIndicator = GObject.registerClass(
     }
 );
 
-export default class IndicatorExampleExtension extends Extension {
+export default class ProtonCheckerExtension extends Extension {
     enable() {
         this._indicator = new ProtonCheckerIndicator();
         Main.panel.addToStatusArea(this.uuid, this._indicator);
