@@ -35,6 +35,9 @@ const ProtonCheckerIndicator = GObject.registerClass(
         _init() {
             super._init(0.0, _('ProtonDB Checker Indicator'));
 
+            // Cancellable variable
+            this._cancellable = new Gio.Cancellable();
+
             // Initialize HTTP session (Soup 3)
             this._session = new Soup.Session();
             // User-Agent required to prevent ProtonDB from blocking requests
@@ -48,16 +51,17 @@ const ProtonCheckerIndicator = GObject.registerClass(
             }));
             
             this._buildMenu();
+        }
 
-            // Ensure proper cleanup. We connect to the destroy signal to handle
-            // the session disposal within the class scope, preventing issues 
-            // in the extension's disable() method.
-            this.connect('destroy', () => {
-                if (this._session) {
-                    this._session.abort();
-                    this._session = null;
-                }
-            });
+        destroy() {
+            if (this._cancellable) {
+                this._cancellable.cancel();
+                this._cancellable = null;
+            }
+
+            this._session = null;
+
+            super.destroy();
         }
 
         _buildMenu() {
@@ -214,7 +218,7 @@ const ProtonCheckerIndicator = GObject.registerClass(
             const url = `${steamEndpoint}?term=${term}&l=english&cc=US`;
 
             const message = Soup.Message.new('GET', url);
-            const bytes = await this._session.send_and_read_async(message, GLib.PRIORITY_DEFAULT, null);
+            const bytes = await this._session.send_and_read_async(message, GLib.PRIORITY_DEFAULT, this._cancellable);
 
             if (message.status_code !== 200) {
                 throw new Error(`Steam API Error: ${message.status_code}`);
@@ -228,7 +232,7 @@ const ProtonCheckerIndicator = GObject.registerClass(
             const protonEndpoint = `https://www.protondb.com/api/v1/reports/summaries/${gameId}.json`;
             
             const message = Soup.Message.new('GET', protonEndpoint);
-            const bytes = await this._session.send_and_read_async(message, GLib.PRIORITY_DEFAULT, null);
+            const bytes = await this._session.send_and_read_async(message, GLib.PRIORITY_DEFAULT, this._cancellable);
 
             if (message.status_code !== 200) {
                 throw new Error(`ProtonDB API Error: ${message.status_code} ${message.reason_phrase}`);
