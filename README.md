@@ -19,6 +19,10 @@ A GNOME Shell extension that allows you to check game compatibility on Linux (Pr
 
 ## Installation
 
+### GNOME Extensions Website
+
+[<img src="https://raw.githubusercontent.com/andyholmes/gnome-shell-extensions-badge/eb9af9a1c6f04eb060cb01de6aeb5c84232cd8c0/get-it-on-ego.svg?sanitize=true" alt="Get it on GNOME Extensions" height="100" align="middle">](https://extensions.gnome.org/extension/9122/protondb-checker/)
+
 ### From Source (GitHub)
 
 To install the latest version directly from the source, you need `git`, `gettext`, and `zip`.
@@ -51,11 +55,6 @@ To install the latest version directly from the source, you need `git`, `gettext
     ```bash
     gnome-extensions enable proton-checker@carvdev.github.com
     ```
-
-### GNOME Extensions Website
-* **Status:** Pending Review.
-* Once approved, you will be able to install it directly from [extensions.gnome.org](https://extensions.gnome.org/).
-
 ## Development & Translations
 
 ### Directory Structure
