@@ -137,5 +137,10 @@ This project is licensed under the **GNU General Public License v3.0**. See the 
 
 ## Credits
 
-* Data provided by [ProtonDB](https://www.protondb.com/) and [Steam](https://store.steampowered.com/).
-* This extension is not affiliated with Valve or ProtonDB.
+* Data provided by [ProtonDB](https://www.protondb.com/) and [Steam](https://store.steampowered.com/) (this extension is not affiliated with Valve or ProtonDB).
+* **Translations:**
+
+| Language      | Contributor                                            |
+|-------------- |--------------------------------------------------------|
+| 🇧🇷 Portuguese | [CarvDev](https://github.com/CarvDev)                  |
+| 🇪🇸 Spanish    | [juanmagdev](https://github.com/juanmagdev/juanmagdev) |
