@@ -1,4 +1,4 @@
-# ProtonDB Checker Indicator
+# ProtonDB Checker
 
 A GNOME Shell extension that allows you to check game compatibility on Linux (Proton) directly from your panel. It uses the Steam API to search for games and the ProtonDB API to fetch compatibility reports.
 
